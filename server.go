@@ -1,27 +1,31 @@
 package main
 
 import (
-  "github.com/codegangsta/negroni"
-  "github.com/gorilla/mux"
-  "github.com/sdboyer/mock_druplatform_api/acquia"
-  "net/http"
-  "fmt"
+	"fmt"
+	"github.com/codegangsta/negroni"
+	"github.com/gorilla/mux"
+	"github.com/sdboyer/mock_druplatform_api/acquia"
+	"net/http"
 )
 
 var fml = fmt.Println
 
-
 func main() {
-  // Spawn an Acquia API server on the default port
-  go negroni.New().UseHandler(acquia.NewRouter()).Run(":10234")
+	// Spawn an Acquia API server on the default port
+	aq := acquia.NewServerInstance()
 
-  router := mux.NewRouter()
+	an := negroni.New()
+	an.UseHandler(acquia.NewRouter(aq))
 
-  router.HandleFunc("/", ServerListHandler)
+	go an.Run(":10234")
 
-  n := negroni.New()
-  n.UseHandler(router)
-  n.Run(":10233")
+	router := mux.NewRouter()
+
+	router.HandleFunc("/", ServerListHandler)
+
+	n := negroni.New()
+	n.UseHandler(router)
+	n.Run(":10233")
 }
 
 func ServerListHandler(w http.ResponseWriter, r *http.Request) {
