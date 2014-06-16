@@ -11,6 +11,13 @@ import (
 
 var fml = fmt.Println
 
+type ServerIdentifier interface {
+	Port() int
+	Name() string
+}
+
+var servers = make(map[int]ServerIdentifier, 0)
+
 func main() {
 	router := mux.NewRouter()
 	router.Headers("Content-Type", "application/json")
