@@ -42,9 +42,11 @@ type ServerInstance struct {
 var servers = make([]ServerInstance, 0)
 
 func main() {
-	router := mux.NewRouter()
-	router.Headers("Content-Type", "application/json")
+	setUpMainHttpd()
+}
 
+func setUpMainHttpd() {
+	router := mux.NewRouter()
 	router.HandleFunc("/", hhListServers).Methods("GET")
 	router.HandleFunc("/", hhCreateServer).Methods("POST")
 
