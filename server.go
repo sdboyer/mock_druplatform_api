@@ -58,7 +58,7 @@ func setUpMainHttpd() {
 }
 
 type createServerRequest struct {
-	Server_type string  `json:"server_type"`
+	ServerType string `json:"server_type"`
 	Version string `json:"version"`
 }
 
@@ -90,7 +90,7 @@ func hhCreateServer(w http.ResponseWriter, r *http.Request) {
 	si := ServerInstance{Listener: kal, HttpServer: srv}
 	resp, err := json.Marshal(struct{
 		Port int `json:"port"`
-		ServerType string  `json:"server_type"`
+		ServerType string `json:"server_type"`
 		Version string `json:"version"`
 	}{
 		Port: kal.Addr().(*net.TCPAddr).Port,
@@ -102,9 +102,7 @@ func hhCreateServer(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	h := new(http.Header)
-	h.Add("Content-Type", "application/json")
-
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(resp) // auto-sends 200 response
 	servers = append(servers, si)
 	go srv.Serve(kal)
