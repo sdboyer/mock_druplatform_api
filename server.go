@@ -54,9 +54,8 @@ func main() {
 }
 
 type createServerRequest struct {
-	port int `json:"port"`
-	server_type string  `json:"server_type"`
-	version string `json:"version"`
+	Server_type string  `json:"server_type"`
+	Version string `json:"version"`
 }
 
 func hhCreateServer(w http.ResponseWriter, r *http.Request) {
@@ -84,10 +83,24 @@ func hhCreateServer(w http.ResponseWriter, r *http.Request) {
 	// The Addr prop shouldn't actually be used, but set it to avoid triggering defaults
 	srv := &http.Server{Addr: laddr.String(), Handler: an}
 
-	go srv.Serve(kal)
-
 	si := ServerInstance{Listener: kal, HttpServer: srv}
+	resp, err := json.Marshal(struct{
+		Port int `json:"port"`
+		ServerType string  `json:"server_type"`
+		Version string `json:"version"`
+	}{
+		Port: kal.Addr().(*net.TCPAddr).Port,
+		ServerType: "acquia",
+		Version: "1.0",
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	w.Write(resp) // auto-sends 200 response
 	servers = append(servers, si)
+	go srv.Serve(kal)
 }
 
 func hhListServers(w http.ResponseWriter, r *http.Request) {
