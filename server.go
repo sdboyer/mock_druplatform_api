@@ -35,6 +35,11 @@ type ServerInstance struct {
 	HttpServer *http.Server
 }
 
+type ApiServlet interface {
+	Name() string
+	Version() string
+}
+
 var servers = make([]ServerInstance, 0)
 
 type createServerRequest struct {
