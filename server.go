@@ -61,6 +61,11 @@ type createServerRequest struct {
 	ServerType string `json:"server_type"`
 	Version string `json:"version"`
 }
+type createServerResponse struct{
+	Port int `json:"port"`
+	ServerType string `json:"server_type"`
+	Version string `json:"version"`
+}
 
 func hhCreateServer(w http.ResponseWriter, r *http.Request) {
 	j := &createServerRequest{}
@@ -88,11 +93,7 @@ func hhCreateServer(w http.ResponseWriter, r *http.Request) {
 	srv := &http.Server{Addr: laddr.String(), Handler: an}
 
 	si := ServerInstance{Listener: kal, HttpServer: srv}
-	resp, err := json.Marshal(struct{
-		Port int `json:"port"`
-		ServerType string `json:"server_type"`
-		Version string `json:"version"`
-	}{
+	resp, err := json.Marshal(createServerResponse{
 		Port: kal.Addr().(*net.TCPAddr).Port,
 		ServerType: "acquia",
 		Version: "1.0",
