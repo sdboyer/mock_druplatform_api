@@ -10,6 +10,10 @@ type AcquiaServerState struct {
 	Tasks TaskList
 }
 
+func (ss *AcquiaServerState) Version() string {
+	return "1.0"
+}
+
 type Subscription struct {
 	Name string
 	Environments []*Environment

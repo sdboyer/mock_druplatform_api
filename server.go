@@ -15,7 +15,7 @@ import (
 // dead TCP connections (e.g. closing laptop mid-download) eventually
 // go away.
 //
-// Copied from net/http, b/c they did not deign to export
+// (Copied from net/http, b/c they did not deign to export)
 type tcpKeepAliveListener struct {
     *net.TCPListener
 }
@@ -33,10 +33,10 @@ func (ln tcpKeepAliveListener) Accept() (c net.Conn, err error) {
 type ServerInstance struct {
 	Listener tcpKeepAliveListener
 	HttpServer *http.Server
+	MockApp
 }
 
-type ApiServlet interface {
-	Name() string
+type MockApp interface {
 	Version() string
 }
 
@@ -46,7 +46,8 @@ type createServerRequest struct {
 	ServerType string `json:"server_type"`
 	Version string `json:"version"`
 }
-type createServerResponse struct{
+
+type createServerResponse struct {
 	Port int `json:"port"`
 	ServerType string `json:"server_type"`
 	Version string `json:"version"`
@@ -61,7 +62,8 @@ func hhCreateServer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	an := negroni.New()
-	an.UseHandler(acquia.NewRouter(acquia.NewServerInstance("default")))
+	app := acquia.NewServerInstance("default")
+	an.UseHandler(acquia.NewRouter(app))
 
 	laddr, err := net.ResolveTCPAddr("tcp", "0.0.0.0:0") // listen to all the things
 	if err != nil {
@@ -77,11 +79,11 @@ func hhCreateServer(w http.ResponseWriter, r *http.Request) {
 	// The Addr prop shouldn't actually be used, but set it to avoid triggering defaults
 	srv := &http.Server{Addr: laddr.String(), Handler: an}
 
-	si := ServerInstance{Listener: kal, HttpServer: srv}
+	si := ServerInstance{Listener: kal, HttpServer: srv, MockApp: app}
 	resp, err := json.Marshal(createServerResponse{
 		Port: kal.Addr().(*net.TCPAddr).Port,
 		ServerType: "acquia",
-		Version: "1.0",
+		Version: si.Version(),
 	})
 
 	if err != nil {
