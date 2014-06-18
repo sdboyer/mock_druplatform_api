@@ -51,6 +51,8 @@ func setUpMainHttpd() {
 	router.HandleFunc("/", hhCreateServer).Methods("POST")
 
 	n := negroni.New()
+	n.Use(negroni.NewRecovery())
+	n.Use(negroni.NewLogger())
 	n.UseHandler(router)
 	n.Run(":10233")
 }
@@ -99,6 +101,9 @@ func hhCreateServer(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
+
+	h := new(http.Header)
+	h.Add("Content-Type", "application/json")
 
 	w.Write(resp) // auto-sends 200 response
 	servers = append(servers, si)
