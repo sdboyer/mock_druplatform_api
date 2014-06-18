@@ -1,18 +1,14 @@
 package main
 
 import (
-	"fmt"
 	//"log"
 	"encoding/json"
 	"github.com/codegangsta/negroni"
-	"github.com/gorilla/mux"
 	"github.com/sdboyer/mock_druplatform_api/acquia"
 	"net/http"
 	"net"
 	"time"
 )
-
-var fml = fmt.Println
 
 // tcpKeepAliveListener sets TCP keep-alive timeouts on accepted
 // connections. It's used by ListenAndServe and ListenAndServeTLS so
@@ -40,22 +36,6 @@ type ServerInstance struct {
 }
 
 var servers = make([]ServerInstance, 0)
-
-func main() {
-	setUpMainHttpd()
-}
-
-func setUpMainHttpd() {
-	router := mux.NewRouter()
-	router.HandleFunc("/", hhListServers).Methods("GET")
-	router.HandleFunc("/", hhCreateServer).Methods("POST")
-
-	n := negroni.New()
-	n.Use(negroni.NewRecovery())
-	n.Use(negroni.NewLogger())
-	n.UseHandler(router)
-	n.Run(":10233")
-}
 
 type createServerRequest struct {
 	ServerType string `json:"server_type"`
