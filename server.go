@@ -3,6 +3,7 @@ package main
 import (
 	//"log"
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"github.com/codegangsta/negroni"
 	"github.com/sdboyer/mock_druplatform_api/acquia"
 	"net/http"
@@ -38,6 +39,7 @@ type ServerInstance struct {
 }
 
 type MockApp interface {
+	Router() *mux.Router
 	Version() string
 }
 
@@ -64,7 +66,7 @@ func hhCreateAcquiaServer(w http.ResponseWriter, r *http.Request) {
 
 	an := negroni.New()
 	app := acquia.NewServerInstance("default")
-	an.UseHandler(acquia.NewRouter(app))
+	an.UseHandler(app.Router())
 
 	laddr, err := net.ResolveTCPAddr("tcp", "0.0.0.0:0") // listen to all the things
 	if err != nil {
