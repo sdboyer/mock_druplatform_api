@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net"
 	"time"
+	"strconv"
 )
 
 // tcpKeepAliveListener sets TCP keep-alive timeouts on accepted
@@ -91,7 +92,9 @@ func hhCreateAcquiaServer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(resp) // auto-sends 200 response
+	w.Header().Set("Location", "acquia/" + strconv.Itoa(kal.Addr().(*net.TCPAddr).Port))
+	w.WriteHeader(201)
+	w.Write(resp)
 	servers = append(servers, si)
 	go srv.Serve(kal)
 }
