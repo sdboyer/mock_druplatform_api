@@ -53,7 +53,7 @@ type createServerResponse struct {
 	Version string `json:"version"`
 }
 
-func hhCreateServer(w http.ResponseWriter, r *http.Request) {
+func hhCreateAcquiaServer(w http.ResponseWriter, r *http.Request) {
 	j := &createServerRequest{}
 
 	decoder := json.NewDecoder(r.Body)
@@ -96,6 +96,10 @@ func hhCreateServer(w http.ResponseWriter, r *http.Request) {
 	go srv.Serve(kal)
 }
 
-func hhListServers(w http.ResponseWriter, r *http.Request) {
+func hhListAcquiaServers(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func hhListServerTypes(w http.ResponseWriter, r *http.Request) {
 
 }

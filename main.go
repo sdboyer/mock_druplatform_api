@@ -14,8 +14,9 @@ func main() {
 
 func setUpMainHttpd() {
 	router := mux.NewRouter()
-	router.HandleFunc("/", hhListServers).Methods("GET")
-	router.HandleFunc("/", hhCreateServer).Methods("POST")
+	router.HandleFunc("/", hhListServerTypes).Methods("GET")
+	router.HandleFunc("/acquia", hhListAcquiaServers).Methods("GET")
+	router.HandleFunc("/acquia", hhCreateAcquiaServer).Methods("POST")
 
 	n := negroni.New()
 	n.Use(negroni.NewRecovery())
