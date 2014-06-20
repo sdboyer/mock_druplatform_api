@@ -42,7 +42,7 @@ func TestCreateServer(t *testing.T) {
 		t.Error("Failed to marshal request JSON: ", err)
 	}
 
-	resp, err := c.Post("http://localhost:10233/", "application/json", bytes.NewBuffer(body))
+	resp, err := c.Post("http://localhost:10233/acquia", "application/json", bytes.NewBuffer(body))
 	if err != nil {
 		t.Error(err)
 	}
