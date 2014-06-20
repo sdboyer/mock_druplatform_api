@@ -8,8 +8,10 @@ import (
 )
 
 type AcquiaServerState struct {
+	*http.Server `json:"-"`
 	Subscriptions []*Subscription
-	Tasks TaskList
+	Tasks TaskList `json:"tasks"`
+	Users []*User `json:"users"`
 }
 
 func (ss *AcquiaServerState) Version() string {
@@ -31,10 +33,10 @@ func (ss *AcquiaServerState) Serve(l net.Listener) {
 }
 
 type Subscription struct {
-	Name string
-	Environments []*Environment
-	Databases []*Database
-	Users []*User
+	Name string `json:"name"`
+	Environments []*Environment `json:"environments"`
+	Databases []*Database `json:"databases"`
+	Users []*User `json:"users"`
 }
 
 type Database struct {
@@ -42,9 +44,9 @@ type Database struct {
 }
 
 type Environment struct {
-	Name string
-	Domains []string
-	CodeVersion string
+	Name string `json:"name"`
+	Domains []string `json:"domains"`
+	CodeVersion string `json:"vcs_path"`
 }
 
 type User struct {
@@ -55,16 +57,16 @@ type User struct {
 }
 
 type Task struct {
-	Id int
-	Created int
-	Started int
-	Description string
-	Completed bool
-	Logs string
-	Queue string
-	Result string
-	Sender string
-	State int
+	Id int `json:"name"`
+	Created int `json:"created"`
+	Started int `json:"started"`
+	Description string `json:"description"`
+	Completed bool `json:"completed"`
+	Logs string `json:"logs"`
+	Queue string `json:"queue"`
+	Result string `json:"result"`
+	Sender string `json:"sender"`
+	State int `json:"state"`
 }
 
 type TaskList []*Task
