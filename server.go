@@ -34,13 +34,13 @@ func (ln tcpKeepAliveListener) Accept() (c net.Conn, err error) {
 
 type ServerInstance struct {
 	Listener tcpKeepAliveListener
-	HttpServer *http.Server
 	MockApp
 }
 
 type MockApp interface {
 	Router() *mux.Router
 	Version() string
+	Serve(net.Listener)
 }
 
 var servers = make([]ServerInstance, 0)
@@ -77,28 +77,27 @@ func hhCreateAcquiaServer(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
+
 	kal := tcpKeepAliveListener{l}
+	si := ServerInstance{Listener: kal, MockApp: app}
 
-	// The Addr prop shouldn't actually be used, but set it to avoid triggering defaults
-	srv := &http.Server{Addr: laddr.String(), Handler: an}
-
-	si := ServerInstance{Listener: kal, HttpServer: srv, MockApp: app}
 	resp, err := json.Marshal(createServerResponse{
 		Port: kal.Addr().(*net.TCPAddr).Port,
 		ServerType: "acquia",
 		Version: si.Version(),
 	})
-
 	if err != nil {
 		panic(err)
 	}
+
+	go app.Serve(kal)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Location", "acquia/" + strconv.Itoa(kal.Addr().(*net.TCPAddr).Port))
 	w.WriteHeader(201)
 	w.Write(resp)
+
 	servers = append(servers, si)
-	go srv.Serve(kal)
 }
 
 func hhListAcquiaServers(w http.ResponseWriter, r *http.Request) {

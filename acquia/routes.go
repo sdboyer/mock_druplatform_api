@@ -1,8 +1,10 @@
 package acquia
 
 import (
+	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 	"net/http"
+	"net"
 )
 
 type AcquiaServerState struct {
@@ -12,6 +14,20 @@ type AcquiaServerState struct {
 
 func (ss *AcquiaServerState) Version() string {
 	return "1.0"
+}
+
+// Starts up and serves an httpd of this API server, binding to the provided address.
+//
+// This function blocks; it should typically be called in a goroutine.
+func (ss *AcquiaServerState) Serve(l net.Listener) {
+	// The Addr prop shouldn't actually be used, but set it to avoid triggering defaults
+	n := negroni.New()
+	n.Use(negroni.NewRecovery())
+	n.Use(negroni.NewLogger())
+	n.UseHandler(ss.Router())
+
+	srv := &http.Server{Addr: l.Addr().String(), Handler: n}
+	srv.Serve(l) // blocks inside here
 }
 
 type Subscription struct {
