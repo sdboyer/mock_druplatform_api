@@ -1,12 +1,12 @@
 package main
 
 import (
-	"testing"
-	"io/ioutil"
 	"bytes"
+	"encoding/json"
+	"io/ioutil"
 	"net"
 	"net/http"
-	"encoding/json"
+	"testing"
 )
 
 func TestListen(t *testing.T) {

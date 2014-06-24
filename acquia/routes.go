@@ -1,17 +1,18 @@
 package acquia
 
 import (
+	"net"
+	"net/http"
+
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
-	"net/http"
-	"net"
 )
 
 type AcquiaServerState struct {
-	*http.Server `json:"-"`
-	Subscriptions []*Subscription
-	Tasks TaskList `json:"tasks"`
-	Users []*User `json:"users"`
+	*http.Server  `json:"-"`
+	Subscriptions []*Subscription `json:"subscriptions"`
+	Tasks         TaskList        `json:"tasks"`
+	Users         []*User         `json:"users"`
 }
 
 func (ss *AcquiaServerState) Version() string {
@@ -33,10 +34,10 @@ func (ss *AcquiaServerState) Serve(l net.Listener) {
 }
 
 type Subscription struct {
-	Name string `json:"name"`
+	Name         string         `json:"name"`
 	Environments []*Environment `json:"environments"`
-	Databases []*Database `json:"databases"`
-	Users []*User `json:"users"`
+	Databases    []*Database    `json:"databases"`
+	Users        []*User        `json:"users"`
 }
 
 type Database struct {
@@ -44,9 +45,9 @@ type Database struct {
 }
 
 type Environment struct {
-	Name string `json:"name"`
-	Domains []string `json:"domains"`
-	CodeVersion string `json:"vcs_path"`
+	Name        string   `json:"name"`
+	Domains     []string `json:"domains"`
+	CodeVersion string   `json:"vcs_path"`
 }
 
 type User struct {
@@ -57,16 +58,16 @@ type User struct {
 }
 
 type Task struct {
-	Id int `json:"name"`
-	Created int `json:"created"`
-	Started int `json:"started"`
+	Id          int    `json:"name"`
+	Created     int    `json:"created"`
+	Started     int    `json:"started"`
 	Description string `json:"description"`
-	Completed bool `json:"completed"`
-	Logs string `json:"logs"`
-	Queue string `json:"queue"`
-	Result string `json:"result"`
-	Sender string `json:"sender"`
-	State int `json:"state"`
+	Completed   bool   `json:"completed"`
+	Logs        string `json:"logs"`
+	Queue       string `json:"queue"`
+	Result      string `json:"result"`
+	Sender      string `json:"sender"`
+	State       int    `json:"state"`
 }
 
 type TaskList []*Task
@@ -81,7 +82,7 @@ func (tl TaskList) AddTask() *Task {
 func NewServerInstance(subname string) *AcquiaServerState {
 	aqs := &AcquiaServerState{
 		Subscriptions: make([]*Subscription, 0),
-		Tasks: make([]*Task, 0),
+		Tasks:         make([]*Task, 0),
 	}
 
 	// Make a task to take up the zero index
@@ -334,4 +335,3 @@ func (ss *AcquiaServerState) sitesEnvInstallHandler(w http.ResponseWriter, r *ht
 func (ss *AcquiaServerState) sitesLivedevHandler(w http.ResponseWriter, r *http.Request) {
 	panic("not yet implemented")
 }
-

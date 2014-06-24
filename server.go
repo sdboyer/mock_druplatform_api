@@ -3,13 +3,14 @@ package main
 import (
 	//"log"
 	"encoding/json"
-	"github.com/gorilla/mux"
-	"github.com/codegangsta/negroni"
-	"github.com/sdboyer/mock_druplatform_api/acquia"
-	"net/http"
 	"net"
-	"time"
+	"net/http"
 	"strconv"
+	"time"
+
+	"github.com/codegangsta/negroni"
+	"github.com/gorilla/mux"
+	"github.com/sdboyer/mock_druplatform_api/acquia"
 )
 
 // tcpKeepAliveListener sets TCP keep-alive timeouts on accepted
@@ -19,17 +20,17 @@ import (
 //
 // (Copied from net/http, b/c they did not deign to export)
 type tcpKeepAliveListener struct {
-    *net.TCPListener
+	*net.TCPListener
 }
 
 func (ln tcpKeepAliveListener) Accept() (c net.Conn, err error) {
-    tc, err := ln.AcceptTCP()
-    if err != nil {
-        return
-    }
-    tc.SetKeepAlive(true)
-    tc.SetKeepAlivePeriod(3 * time.Minute)
-    return tc, nil
+	tc, err := ln.AcceptTCP()
+	if err != nil {
+		return
+	}
+	tc.SetKeepAlive(true)
+	tc.SetKeepAlivePeriod(3 * time.Minute)
+	return tc, nil
 }
 
 type ServerInstance struct {
@@ -47,13 +48,13 @@ var servers = make([]ServerInstance, 0)
 
 type createServerRequest struct {
 	ServerType string `json:"server_type"`
-	Version string `json:"version"`
+	Version    string `json:"version"`
 }
 
 type createServerResponse struct {
-	Port int `json:"port"`
+	Port       int    `json:"port"`
 	ServerType string `json:"server_type"`
-	Version string `json:"version"`
+	Version    string `json:"version"`
 }
 
 func hhCreateAcquiaServer(w http.ResponseWriter, r *http.Request) {
@@ -82,9 +83,9 @@ func hhCreateAcquiaServer(w http.ResponseWriter, r *http.Request) {
 	si := ServerInstance{Listener: kal, MockApp: app}
 
 	resp, err := json.Marshal(createServerResponse{
-		Port: kal.Addr().(*net.TCPAddr).Port,
+		Port:       kal.Addr().(*net.TCPAddr).Port,
 		ServerType: "acquia",
-		Version: si.Version(),
+		Version:    si.Version(),
 	})
 	if err != nil {
 		panic(err)
@@ -93,7 +94,7 @@ func hhCreateAcquiaServer(w http.ResponseWriter, r *http.Request) {
 	go app.Serve(kal)
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Location", "acquia/" + strconv.Itoa(kal.Addr().(*net.TCPAddr).Port))
+	w.Header().Set("Location", "acquia/"+strconv.Itoa(kal.Addr().(*net.TCPAddr).Port))
 	w.WriteHeader(201)
 	w.Write(resp)
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 )
@@ -24,4 +25,3 @@ func setUpMainHttpd() {
 	n.UseHandler(router)
 	n.Run(":10233")
 }
-
